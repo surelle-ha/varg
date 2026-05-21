@@ -1,0 +1,808 @@
+{
+  "$schema": "https://raw.githubusercontent.com/surelle-ha/vindicta/main/schema/v7.json",
+  "version": 7,
+  "meta": {
+    "name": "Varg",
+    "description": "",
+    "absolutePath": "C:\\Users\\Harold Eustaquio\\Documents\\Vindicta\\Varg",
+    "githubRepo": null,
+    "editor": "vscode",
+    "aiTool": "codex",
+    "aiTools": [
+      "codex"
+    ],
+    "activeAITool": "codex",
+    "ownedBy": "local",
+    "code": "VAR",
+    "id": "3D2ATXXPjiLWUUVOp0Bf2",
+    "ticketCounter": 8,
+    "createdAt": "2026-05-21T10:56:49.853Z",
+    "updatedAt": "2026-05-21T11:13:27.478Z"
+  },
+  "settings": {
+    "roles": [
+      {
+        "id": "role_dev",
+        "name": "Developer",
+        "color": "#6366f1"
+      },
+      {
+        "id": "role_qa",
+        "name": "QA",
+        "color": "#10b981"
+      },
+      {
+        "id": "role_lead",
+        "name": "Tech Lead",
+        "color": "#f59e0b"
+      }
+    ],
+    "kanbanColumns": [
+      {
+        "id": "col_backlog",
+        "displayName": "Backlog",
+        "status": "backlog",
+        "order": 0,
+        "visible": true
+      },
+      {
+        "id": "col_todo",
+        "displayName": "To Do",
+        "status": "todo",
+        "order": 1,
+        "visible": true
+      },
+      {
+        "id": "col_inprogress",
+        "displayName": "In Progress",
+        "status": "in_progress",
+        "order": 2,
+        "visible": true
+      },
+      {
+        "id": "col_inreview",
+        "displayName": "In Review",
+        "status": "in_review",
+        "order": 3,
+        "visible": true
+      },
+      {
+        "id": "col_done",
+        "displayName": "Done",
+        "status": "done",
+        "order": 4,
+        "visible": true
+      }
+    ]
+  },
+  "members": [
+    {
+      "id": "member_claude",
+      "name": "Claude",
+      "email": null,
+      "avatarUrl": null,
+      "isAI": true,
+      "roleIds": [],
+      "joinedAt": "2026-05-21T10:56:49.853Z"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "4gP5aRfYHI5M8nYHeLH0M",
+      "number": 1,
+      "type": "spike",
+      "status": "done",
+      "priority": "high",
+      "title": "Spike local TTS engine packaging for Windows",
+      "description": "Evaluate local-only TTS engines suitable for a packaged Windows Tauri app. Compare CPU/GPU support, model size, license, startup time, audio quality, and integration path. Recommend one engine for basic generation and document extension points for future voice, speed, emotion, and batch options.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "rjIFLUuYCN3m7oNKdDxag",
+          "text": "Completed the packaging spike document. Recommendation is sherpa-onnx offline TTS as the first Windows-packaged runtime, with comparison against Piper original, OHF piper1-gpl, and Kokoro ONNX plus extension points for voice, speed, emotion, batch, and GPU.\n\nChanged files:\n- docs/tts-engine-spike.md",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.085Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:06.723Z",
+      "updatedAt": "2026-05-21T11:13:27.086Z",
+      "resolvedAt": "2026-05-21T11:13:27.021Z",
+      "createdBy": "Codex"
+    },
+    {
+      "id": "RuM6a9jH7oMOjLcxFMD5v",
+      "number": 2,
+      "type": "feature",
+      "status": "in_review",
+      "priority": "high",
+      "title": "Implement local TTS generation bridge",
+      "description": "Create the Tauri backend command layer for basic text-to-speech generation. Accept text and selected voice/model options, invoke the local engine, write audio output to app storage, and return generation status and file path to the Nuxt UI.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "3Yb2B6QHVuKGIZNr7yY5F",
+          "text": "Implemented the Tauri backend command layer for listing local models and generating speech through a bundled sherpa-onnx executable. It validates input, resolves resource paths, writes WAV output under app data, and returns playback bytes. Real runtime/model assets are still required for end-to-end generation.\n\nChanged files:\n- src-tauri/src/tts.rs\n- src-tauri/src/lib.rs\n- types/tts.ts\n- composables/useTts.ts",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.145Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:06.769Z",
+      "updatedAt": "2026-05-21T11:13:27.145Z",
+      "resolvedAt": null,
+      "createdBy": "Codex"
+    },
+    {
+      "id": "pKUkLhkLr1khvJESsigQE",
+      "number": 3,
+      "type": "feature",
+      "status": "in_review",
+      "priority": "high",
+      "title": "Build basic TTS generation interface",
+      "description": "Create the main Nuxt screen for entering text, selecting available local model or voice, choosing CPU/GPU when supported, generating speech, and playing the produced audio. Keep the UI structured so advanced controls can be added later without redesigning the workflow.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "dlLUPBIma-wWVFXZ7zGVp",
+          "text": "Built the main Nuxt generation interface with text entry, model and voice selects, CPU/GPU mode handling, generate button, output status/path display, and audio playback from backend-returned WAV bytes.\n\nChanged files:\n- app.vue\n- components/TtsGenerationPanel.vue\n- composables/useTts.ts\n- types/tts.ts",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.199Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:06.810Z",
+      "updatedAt": "2026-05-21T11:13:27.199Z",
+      "resolvedAt": null,
+      "createdBy": "Codex"
+    },
+    {
+      "id": "i3Pnd7y6YnDhWbet_0sPg",
+      "number": 4,
+      "type": "feature",
+      "status": "in_progress",
+      "priority": "high",
+      "title": "Package local model assets with Windows app",
+      "description": "Configure the app build so the selected local TTS runtime and starter model assets are bundled with the Windows installer. Ensure first launch works offline, model paths resolve correctly, and generation does not depend on network access.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "zUH3nR7d6sf5W3V_QAAxV",
+          "text": "Configured Tauri Windows bundling to include resources/tts and added model/runtime registry placeholders. This cannot be marked complete until actual sherpa-onnx runtime and starter model files are added and the installer is tested offline.\n\nChanged files:\n- src-tauri/tauri.conf.json\n- src-tauri/resources/tts/models/models.json\n- src-tauri/resources/tts/runtime/README.md\n- src-tauri/resources/tts/models/vits-piper-en_US-lessac-medium/README.md\n- README.md",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.251Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:06.853Z",
+      "updatedAt": "2026-05-21T11:13:27.251Z",
+      "resolvedAt": null,
+      "createdBy": "Codex"
+    },
+    {
+      "id": "jTbzcHEM2TaPZsRJRxI6m",
+      "number": 5,
+      "type": "feature",
+      "status": "in_review",
+      "priority": "medium",
+      "title": "Create glassmorphism application shell",
+      "description": "Implement the core Tailwind glassmorphism design system for the desktop app, including translucent panels, blurred backgrounds, contrast-safe text, focused controls, and reusable layout components. Apply it to the main generation screen and app-level navigation.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "_aLi8vJfbrP7jYxkG3pXI",
+          "text": "Implemented the initial glassmorphism application shell with translucent panels, blurred background, focused controls, contrast-safe text, and applied it to the generation workflow.\n\nChanged files:\n- components/AppShell.vue\n- components/TtsGenerationPanel.vue\n- assets/css/main.css\n- tailwind.config.ts",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.306Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:06.896Z",
+      "updatedAt": "2026-05-21T11:13:27.307Z",
+      "resolvedAt": null,
+      "createdBy": "Codex"
+    },
+    {
+      "id": "3GTKVyFsH_Qho14jqW6eU",
+      "number": 6,
+      "type": "feature",
+      "status": "in_review",
+      "priority": "high",
+      "title": "Implement custom macOS-style traffic light titlebar",
+      "description": "Hide the native Windows titlebar and replace it with a custom traffic-light style titlebar. Implement native window behavior for drag, minimize, maximize or restore, and close through Tauri window APIs. Ensure controls remain responsive and accessible.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "JUZqgT4tfHPK_ffuuNwqG",
+          "text": "Configured the Tauri window with decorations disabled and added a custom macOS-style traffic-light titlebar wired to native close, minimize, maximize/restore, and drag behavior.\n\nChanged files:\n- components/AppTitlebar.vue\n- src-tauri/tauri.conf.json\n- src-tauri/capabilities/default.json",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.358Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:06.937Z",
+      "updatedAt": "2026-05-21T11:13:27.359Z",
+      "resolvedAt": null,
+      "createdBy": "Codex"
+    },
+    {
+      "id": "iCt35QBxevAskiCf_kGiW",
+      "number": 7,
+      "type": "chore",
+      "status": "done",
+      "priority": "medium",
+      "title": "Add Windows acceptance test checklist",
+      "description": "Create a Windows-only acceptance checklist covering install, offline launch, titlebar behavior, CPU generation, GPU option handling, audio playback, output file creation, and app restart behavior. Include expected results and known hardware assumptions.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "TXQe72JWAmiKdMMFnZGUF",
+          "text": "Added the Windows-only acceptance checklist with expected results and hardware assumptions for install, offline launch, titlebar behavior, CPU generation, GPU handling, playback, output files, restart, and missing assets.\n\nChanged files:\n- docs/windows-acceptance-checklist.md",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.418Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:06.978Z",
+      "updatedAt": "2026-05-21T11:13:27.418Z",
+      "resolvedAt": "2026-05-21T11:13:27.383Z",
+      "createdBy": "Codex"
+    },
+    {
+      "id": "rNnQxPZl2AjN9BoRv-9RJ",
+      "number": 8,
+      "type": "chore",
+      "status": "in_review",
+      "priority": "medium",
+      "title": "Prepare extensible TTS settings model",
+      "description": "Define frontend and backend data structures for TTS settings beyond basic generation, including voice, speed, pitch, seed, output format, and batch generation placeholders. Wire only the basic fields now while keeping serialization and command contracts ready for later features.",
+      "gitControl": {
+        "enabled": false,
+        "branch": "",
+        "autoCommit": false,
+        "autoPush": false
+      },
+      "labels": [],
+      "roleIds": [],
+      "sprintId": "12slsJflpL2jT_nJBM-44",
+      "comments": [
+        {
+          "id": "ZvbjD2SK6uTZoiwb72PUF",
+          "text": "Defined extensible frontend and backend TTS settings structures for voice, compute target, speed, pitch, seed, output format, and batch placeholders while only wiring basic WAV generation now.\n\nChanged files:\n- types/tts.ts\n- src-tauri/src/tts.rs\n- components/TtsGenerationPanel.vue\n- src-tauri/resources/tts/models/models.json",
+          "author": "AI Agent",
+          "isAI": true,
+          "parentId": null,
+          "likes": 0,
+          "createdAt": "2026-05-21T11:13:27.470Z"
+        }
+      ],
+      "likes": 0,
+      "createdAt": "2026-05-21T11:03:07.031Z",
+      "updatedAt": "2026-05-21T11:13:27.471Z",
+      "resolvedAt": null,
+      "createdBy": "Codex"
+    }
+  ],
+  "sprints": [
+    {
+      "id": "12slsJflpL2jT_nJBM-44",
+      "name": "Sprint 1",
+      "goal": "Project Setup",
+      "startDate": "",
+      "endDate": "",
+      "ticketIds": [
+        "4gP5aRfYHI5M8nYHeLH0M",
+        "RuM6a9jH7oMOjLcxFMD5v",
+        "pKUkLhkLr1khvJESsigQE",
+        "i3Pnd7y6YnDhWbet_0sPg",
+        "jTbzcHEM2TaPZsRJRxI6m",
+        "3GTKVyFsH_Qho14jqW6eU",
+        "iCt35QBxevAskiCf_kGiW",
+        "rNnQxPZl2AjN9BoRv-9RJ"
+      ],
+      "status": "active",
+      "createdAt": "2026-05-21T11:03:06.694Z"
+    }
+  ],
+  "history": [
+    {
+      "id": "i4mjJUx9ZUHd0rb8Q3n2V",
+      "at": "2026-05-21T11:13:27.491Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "rNnQxPZl2AjN9BoRv-9RJ",
+        "number": 8,
+        "name": "Prepare extensible TTS settings model",
+        "isAI": true
+      }
+    },
+    {
+      "id": "XurcKh0UrF8F5PYpiVTOD",
+      "at": "2026-05-21T11:13:27.465Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "rNnQxPZl2AjN9BoRv-9RJ",
+        "number": 8,
+        "name": "Prepare extensible TTS settings model",
+        "from": "todo",
+        "to": "in_review"
+      }
+    },
+    {
+      "id": "V6L08l2ltsYAGBl8o0BpL",
+      "at": "2026-05-21T11:13:27.439Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "iCt35QBxevAskiCf_kGiW",
+        "number": 7,
+        "name": "Add Windows acceptance test checklist",
+        "isAI": true
+      }
+    },
+    {
+      "id": "FSLUq1SrGu0sn72CdjNok",
+      "at": "2026-05-21T11:13:27.413Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "iCt35QBxevAskiCf_kGiW",
+        "number": 7,
+        "name": "Add Windows acceptance test checklist",
+        "from": "todo",
+        "to": "done"
+      }
+    },
+    {
+      "id": "EU34X0vyjs1ITPZI3kcRf",
+      "at": "2026-05-21T11:13:27.379Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "3GTKVyFsH_Qho14jqW6eU",
+        "number": 6,
+        "name": "Implement custom macOS-style traffic light titlebar",
+        "isAI": true
+      }
+    },
+    {
+      "id": "3HTRAV7_lL29AdxxxeUpF",
+      "at": "2026-05-21T11:13:27.354Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "3GTKVyFsH_Qho14jqW6eU",
+        "number": 6,
+        "name": "Implement custom macOS-style traffic light titlebar",
+        "from": "todo",
+        "to": "in_review"
+      }
+    },
+    {
+      "id": "2a6u12NSok_zLggTDOh-2",
+      "at": "2026-05-21T11:13:27.328Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "jTbzcHEM2TaPZsRJRxI6m",
+        "number": 5,
+        "name": "Create glassmorphism application shell",
+        "isAI": true
+      }
+    },
+    {
+      "id": "3cClf1XkXy1pbdcjBsM_k",
+      "at": "2026-05-21T11:13:27.302Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "jTbzcHEM2TaPZsRJRxI6m",
+        "number": 5,
+        "name": "Create glassmorphism application shell",
+        "from": "todo",
+        "to": "in_review"
+      }
+    },
+    {
+      "id": "47liXSfBDO9oraK5iTuPL",
+      "at": "2026-05-21T11:13:27.276Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "i3Pnd7y6YnDhWbet_0sPg",
+        "number": 4,
+        "name": "Package local model assets with Windows app",
+        "isAI": true
+      }
+    },
+    {
+      "id": "JsCvQFquPQBnMrJ9NGQjp",
+      "at": "2026-05-21T11:13:27.247Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "i3Pnd7y6YnDhWbet_0sPg",
+        "number": 4,
+        "name": "Package local model assets with Windows app",
+        "from": "todo",
+        "to": "in_progress"
+      }
+    },
+    {
+      "id": "be5GLvAJ3I8YmohN63Sev",
+      "at": "2026-05-21T11:13:27.221Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "pKUkLhkLr1khvJESsigQE",
+        "number": 3,
+        "name": "Build basic TTS generation interface",
+        "isAI": true
+      }
+    },
+    {
+      "id": "ZHfQfdJq_OUSQ8PznXHhv",
+      "at": "2026-05-21T11:13:27.195Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "pKUkLhkLr1khvJESsigQE",
+        "number": 3,
+        "name": "Build basic TTS generation interface",
+        "from": "todo",
+        "to": "in_review"
+      }
+    },
+    {
+      "id": "n3bYpFhERaG4hOrdtp8ON",
+      "at": "2026-05-21T11:13:27.170Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "RuM6a9jH7oMOjLcxFMD5v",
+        "number": 2,
+        "name": "Implement local TTS generation bridge",
+        "isAI": true
+      }
+    },
+    {
+      "id": "sMmKxX7fPAjpw_R-Od-D7",
+      "at": "2026-05-21T11:13:27.141Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "RuM6a9jH7oMOjLcxFMD5v",
+        "number": 2,
+        "name": "Implement local TTS generation bridge",
+        "from": "todo",
+        "to": "in_review"
+      }
+    },
+    {
+      "id": "RuLWZJB52xPo7T0Bf_lmH",
+      "at": "2026-05-21T11:13:27.107Z",
+      "action": "ticket:commented",
+      "actor": "AI Agent",
+      "payload": {
+        "id": "4gP5aRfYHI5M8nYHeLH0M",
+        "number": 1,
+        "name": "Spike local TTS engine packaging for Windows",
+        "isAI": true
+      }
+    },
+    {
+      "id": "m5oTrr6vdvxWdRLVMtYGS",
+      "at": "2026-05-21T11:13:27.080Z",
+      "action": "ticket:moved",
+      "actor": "local",
+      "payload": {
+        "id": "4gP5aRfYHI5M8nYHeLH0M",
+        "number": 1,
+        "name": "Spike local TTS engine packaging for Windows",
+        "from": "todo",
+        "to": "done"
+      }
+    },
+    {
+      "id": "ocaRTPqWf8yRRoOCdlQoX",
+      "at": "2026-05-21T11:03:49.033Z",
+      "action": "sprint:started",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1"
+      }
+    },
+    {
+      "id": "hHFzwJs2sIbmkKSRoNcgw",
+      "at": "2026-05-21T11:03:07.074Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "rNnQxPZl2AjN9BoRv-9RJ"
+      }
+    },
+    {
+      "id": "DkAQoqIOfhAIoviOMxnf9",
+      "at": "2026-05-21T11:03:07.052Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "rNnQxPZl2AjN9BoRv-9RJ",
+        "number": 8,
+        "name": "Prepare extensible TTS settings model",
+        "status": "todo",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "irmhSVMMhqU20_kRD1cDo",
+      "at": "2026-05-21T11:03:07.028Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "iCt35QBxevAskiCf_kGiW"
+      }
+    },
+    {
+      "id": "OCCT09FVitN93fmBq3D3A",
+      "at": "2026-05-21T11:03:06.996Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "iCt35QBxevAskiCf_kGiW",
+        "number": 7,
+        "name": "Add Windows acceptance test checklist",
+        "status": "todo",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "GqfIgGd0nBY5mxH_8fpqE",
+      "at": "2026-05-21T11:03:06.976Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "3GTKVyFsH_Qho14jqW6eU"
+      }
+    },
+    {
+      "id": "t-ilJ9Xr4OKq59xcTlxYM",
+      "at": "2026-05-21T11:03:06.954Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "3GTKVyFsH_Qho14jqW6eU",
+        "number": 6,
+        "name": "Implement custom macOS-style traffic light titlebar",
+        "status": "todo",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "lFOisYX0KfnwTaYzqXXvq",
+      "at": "2026-05-21T11:03:06.934Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "jTbzcHEM2TaPZsRJRxI6m"
+      }
+    },
+    {
+      "id": "xVJE1ziPEUY4OtPqvGPTO",
+      "at": "2026-05-21T11:03:06.913Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "jTbzcHEM2TaPZsRJRxI6m",
+        "number": 5,
+        "name": "Create glassmorphism application shell",
+        "status": "todo",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "nzxWJWOz6a5-L9cVgOO0a",
+      "at": "2026-05-21T11:03:06.892Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "i3Pnd7y6YnDhWbet_0sPg"
+      }
+    },
+    {
+      "id": "gVfRkb2V30_rNakGKSC0J",
+      "at": "2026-05-21T11:03:06.871Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "i3Pnd7y6YnDhWbet_0sPg",
+        "number": 4,
+        "name": "Package local model assets with Windows app",
+        "status": "todo",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "2mbL9p7Tl7tP_QR4VCAke",
+      "at": "2026-05-21T11:03:06.850Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "pKUkLhkLr1khvJESsigQE"
+      }
+    },
+    {
+      "id": "Ksp_RkrUfpU-1sfScOmuY",
+      "at": "2026-05-21T11:03:06.829Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "pKUkLhkLr1khvJESsigQE",
+        "number": 3,
+        "name": "Build basic TTS generation interface",
+        "status": "todo",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "1Gkrhwz905X1wubS0fAVp",
+      "at": "2026-05-21T11:03:06.808Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "RuM6a9jH7oMOjLcxFMD5v"
+      }
+    },
+    {
+      "id": "Rnnga9aK9dGu-1ROevOCg",
+      "at": "2026-05-21T11:03:06.788Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "RuM6a9jH7oMOjLcxFMD5v",
+        "number": 2,
+        "name": "Implement local TTS generation bridge",
+        "status": "todo",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "eVqc1FQiJvmZXrs_dohD7",
+      "at": "2026-05-21T11:03:06.767Z",
+      "action": "sprint:ticket_assigned",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "ticketId": "4gP5aRfYHI5M8nYHeLH0M"
+      }
+    },
+    {
+      "id": "Gx-MLH5gKbQaPx6SIx31_",
+      "at": "2026-05-21T11:03:06.745Z",
+      "action": "ticket:created",
+      "actor": "Codex",
+      "payload": {
+        "id": "4gP5aRfYHI5M8nYHeLH0M",
+        "number": 1,
+        "name": "Spike local TTS engine packaging for Windows",
+        "status": "todo",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "7h1HyZFOh6qh-zvNX8wjp",
+      "at": "2026-05-21T11:03:06.719Z",
+      "action": "sprint:created",
+      "actor": "local",
+      "payload": {
+        "id": "12slsJflpL2jT_nJBM-44",
+        "name": "Sprint 1",
+        "goal": "Project Setup"
+      }
+    },
+    {
+      "id": "Hvkf9MB-Krb_kBCh9S-Q-",
+      "at": "2026-05-21T10:56:49.853Z",
+      "actor": "local",
+      "action": "project:created",
+      "payload": {
+        "name": "Varg"
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+node_modules/
+.nuxt/
+.output/
+dist/
+src-tauri/target/
+src-tauri/gen/
+*.log
+
+# Bundled Kokoro TTS model files (download with: pnpm model:download)
+public/models/
+

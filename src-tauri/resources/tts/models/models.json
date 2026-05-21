@@ -1,0 +1,19 @@
+[
+  {
+    "id": "vits-piper-en-us-lessac-medium",
+    "name": "Piper Lessac Medium",
+    "engine": "sherpa-onnx",
+    "modelPath": "models/vits-piper-en_US-lessac-medium/en_US-lessac-medium.onnx",
+    "tokensPath": "models/vits-piper-en_US-lessac-medium/tokens.txt",
+    "dataDir": "models/vits-piper-en_US-lessac-medium/espeak-ng-data",
+    "supportsGpu": false,
+    "voices": [
+      {
+        "id": "lessac",
+        "name": "Lessac",
+        "locale": "en-US"
+      }
+    ]
+  }
+]
+
