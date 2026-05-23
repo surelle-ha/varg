@@ -1,6 +1,29 @@
 <script setup lang="ts">
-type Panel = 'tts' | 'history' | 'settings'
-const active = ref<Panel>('tts')
+import { useProfile } from '~/composables/useProfile'
+import { useSettings } from '~/composables/useSettings'
+
+type Panel = 'profile' | 'notebook' | 'tts' | 'history' | 'monitor' | 'model' | 'settings'
+const active      = ref<Panel>('tts')
+const pendingText = ref<string | null>(null)
+
+const { profile } = useProfile()
+const { settings } = useSettings()
+
+watch(() => settings.value.showSystemMonitor, show => {
+  if (!show && active.value === 'monitor') active.value = 'tts'
+})
+const initials = computed(() => {
+  const f = profile.value.firstName?.[0]?.toUpperCase() ?? ''
+  const l = profile.value.lastName?.[0]?.toUpperCase() ?? ''
+  return (f + l) || '?'
+})
+
+// Provide to NotebookPanel: switch to TTS with pre-filled text
+provide('pendingText', pendingText)
+provide('sendToTts', (text: string) => {
+  pendingText.value = text
+  active.value = 'tts'
+})
 </script>
 
 <template>
@@ -12,13 +35,45 @@ const active = ref<Panel>('tts')
       <!-- Sidebar -->
       <nav class="flex w-[52px] flex-shrink-0 flex-col items-center gap-1 border-r border-white/5 bg-surface py-3">
 
-        <!-- Logo -->
-        <div class="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-sm font-bold text-white shadow-button select-none">
-          V
-        </div>
+        <!-- Profile avatar button -->
+        <button
+          type="button"
+          title="Profile"
+          class="mb-1 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl overflow-hidden border-2 transition-ui"
+          :class="active === 'profile'
+            ? 'border-accent shadow-button'
+            : 'border-transparent hover:border-white/20'"
+          @click="active = 'profile'"
+        >
+          <img
+            v-if="profile.avatar"
+            :src="profile.avatar"
+            class="h-full w-full object-cover"
+          />
+          <div
+            v-else
+            class="flex h-full w-full items-center justify-center rounded-xl bg-accent text-[12px] font-bold text-white select-none"
+          >{{ initials }}</div>
+        </button>
         <span class="mb-1 h-px w-7 rounded bg-white/10" />
 
-        <!-- TTS -->
+        <!-- Notebook -->
+        <button
+          type="button"
+          title="Notebook"
+          class="flex h-9 w-9 items-center justify-center rounded-xl transition-ui"
+          :class="active === 'notebook' ? 'bg-accent/20 text-accent' : 'text-faded hover:bg-subtle hover:text-secondary'"
+          @click="active = 'notebook'"
+        >
+          <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+        </button>
+
+        <span class="h-px w-7 rounded bg-white/10" />
+
+        <!-- TTS Generate -->
         <button
           type="button"
           title="Generate"
@@ -46,7 +101,36 @@ const active = ref<Panel>('tts')
           </svg>
         </button>
 
+        <!-- System Monitor (optional feature) -->
+        <button
+          v-if="settings.showSystemMonitor"
+          type="button"
+          title="System Monitor"
+          class="flex h-9 w-9 items-center justify-center rounded-xl transition-ui"
+          :class="active === 'monitor' ? 'bg-accent/20 text-accent' : 'text-faded hover:bg-subtle hover:text-secondary'"
+          @click="active = 'monitor'"
+        >
+          <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+          </svg>
+        </button>
+
         <div class="flex-1" />
+
+        <!-- Model / AI -->
+        <button
+          type="button"
+          title="AI Model"
+          class="flex h-9 w-9 items-center justify-center rounded-xl transition-ui"
+          :class="active === 'model' ? 'bg-accent/20 text-accent' : 'text-faded hover:bg-subtle hover:text-secondary'"
+          @click="active = 'model'"
+        >
+          <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+          </svg>
+        </button>
 
         <!-- Settings -->
         <button
@@ -64,13 +148,26 @@ const active = ref<Panel>('tts')
         </button>
       </nav>
 
+      <!-- Custom context menu (global) -->
+      <ContextMenu />
+
       <!-- Main area -->
       <main class="flex min-h-0 flex-1 overflow-y-auto bg-overlay">
-        <TtsGenerationPanel v-if="active === 'tts'" />
+        <ProfilePanel       v-if="active === 'profile'" />
+        <NotebookPanel      v-else-if="active === 'notebook'" />
+        <TtsGenerationPanel v-else-if="active === 'tts'" />
         <HistoryPanel       v-else-if="active === 'history'" />
+        <SystemMonitorPanel v-else-if="active === 'monitor'" />
+        <ModelPanel         v-else-if="active === 'model'" />
         <SettingsPanel      v-else-if="active === 'settings'" />
       </main>
 
     </div>
+
+    <!-- Global audio drawer — sits below all panels -->
+    <AudioDrawer />
+
+    <!-- Floating system monitor widget (only when feature is enabled) -->
+    <FloatingMonitor v-if="settings.showSystemMonitor" />
   </div>
 </template>

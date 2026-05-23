@@ -1,8 +1,12 @@
 <script setup lang="ts">
 const props = defineProps<{
-  src: string
+  src:        string
   elapsedMs?: number
   charCount?: number
+  wordCount?: number
+  fileSize?:  number
+  chunks?:    number
+  device?:    string
 }>()
 
 const emit = defineEmits<{ save: [] }>()
@@ -24,6 +28,11 @@ function fmt(s: number) {
   return `${m}:${Math.floor(s % 60).toString().padStart(2, '0')}`
 }
 
+function fmtBytes(b: number) {
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`
+  return `${(b / 1024 / 1024).toFixed(1)} MB`
+}
+
 function togglePlay() {
   if (!audioRef.value) return
   isPlaying.value ? audioRef.value.pause() : audioRef.value.play()
@@ -35,7 +44,6 @@ function seek(e: MouseEvent) {
   audioRef.value.currentTime = (e.offsetX / bar.clientWidth) * duration.value
 }
 
-// Auto-play on new audio
 watch(() => props.src, async () => {
   isPlaying.value = false
   current.value   = 0
@@ -58,23 +66,10 @@ watch(() => props.src, async () => {
   />
 
   <div class="glass-panel rounded-xl p-3 space-y-2.5">
+
     <!-- Header row -->
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="text-[10px] font-semibold uppercase tracking-widest text-faded">Output</span>
-        <span v-if="elapsedMs" class="rounded bg-surface px-1.5 py-0.5 text-[10px] tabular-nums text-faded">
-          {{ (elapsedMs / 1000).toFixed(2) }}s gen
-        </span>
-        <span v-if="duration" class="rounded bg-surface px-1.5 py-0.5 text-[10px] tabular-nums text-faded">
-          {{ fmt(duration) }} audio
-        </span>
-        <span v-if="rtf" class="rounded bg-surface px-1.5 py-0.5 text-[10px] tabular-nums text-faded">
-          RTF {{ rtf }}×
-        </span>
-        <span v-if="charCount" class="rounded bg-surface px-1.5 py-0.5 text-[10px] tabular-nums text-faded">
-          {{ charCount.toLocaleString() }} chars
-        </span>
-      </div>
+      <span class="text-[10px] font-semibold uppercase tracking-widest text-faded">Output</span>
       <button
         type="button"
         class="flex items-center gap-1.5 rounded-lg bg-surface px-2.5 py-1 text-[11px] text-secondary transition-ui hover:bg-subtle hover:text-primary"
@@ -88,9 +83,8 @@ watch(() => props.src, async () => {
       </button>
     </div>
 
-    <!-- Controls -->
+    <!-- Playback controls -->
     <div class="flex items-center gap-3">
-      <!-- Play / Pause -->
       <button
         type="button"
         class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-white shadow-button transition-ui hover:bg-accent-dark active:scale-95"
@@ -104,10 +98,9 @@ watch(() => props.src, async () => {
         </svg>
       </button>
 
-      <!-- Seek bar + time -->
       <div class="flex flex-1 flex-col gap-1">
         <div
-          class="group relative h-1.5 w-full cursor-pointer rounded-full bg-subtle overflow-hidden"
+          class="h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-subtle"
           @click="seek"
         >
           <div
@@ -121,5 +114,57 @@ watch(() => props.src, async () => {
         </div>
       </div>
     </div>
+
+    <!-- Stats grid -->
+    <div class="grid grid-cols-2 gap-x-4 gap-y-1 border-t border-white/5 pt-2">
+      <!-- Input -->
+      <div>
+        <p class="mb-1 text-[9px] font-semibold uppercase tracking-widest text-faded/50">Input</p>
+        <div class="flex flex-wrap gap-x-2 gap-y-0.5">
+          <span v-if="charCount" class="text-[11px] text-faded tabular-nums">
+            {{ charCount.toLocaleString() }} chars
+          </span>
+          <span v-if="wordCount" class="text-[11px] text-faded tabular-nums">
+            · {{ wordCount.toLocaleString() }} words
+          </span>
+          <span v-if="chunks && chunks > 1" class="text-[11px] text-faded">
+            · {{ chunks }} chunks
+          </span>
+        </div>
+      </div>
+
+      <!-- Output -->
+      <div>
+        <p class="mb-1 text-[9px] font-semibold uppercase tracking-widest text-faded/50">Output</p>
+        <div class="flex flex-wrap gap-x-2 gap-y-0.5">
+          <span v-if="duration" class="text-[11px] text-faded tabular-nums">
+            {{ fmt(duration) }} audio
+          </span>
+          <span v-if="fileSize" class="text-[11px] text-faded tabular-nums">
+            · {{ fmtBytes(fileSize) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Processing -->
+      <div>
+        <p class="mb-1 text-[9px] font-semibold uppercase tracking-widest text-faded/50">Processing</p>
+        <div class="flex flex-wrap gap-x-2 gap-y-0.5">
+          <span v-if="elapsedMs" class="text-[11px] text-faded tabular-nums">
+            {{ (elapsedMs / 1000).toFixed(2) }}s
+          </span>
+          <span v-if="rtf" class="text-[11px] text-faded">
+            · RTF {{ rtf }}×
+          </span>
+        </div>
+      </div>
+
+      <!-- Device -->
+      <div v-if="device">
+        <p class="mb-1 text-[9px] font-semibold uppercase tracking-widest text-faded/50">Device</p>
+        <span class="text-[11px] uppercase text-faded">{{ device }}</span>
+      </div>
+    </div>
+
   </div>
 </template>

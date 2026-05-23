@@ -70,3 +70,6 @@ audio { color-scheme: dark; }
 .fade-leave-active { transition: opacity 0.15s ease; }
 .fade-enter-from,
 .fade-leave-to     { opacity: 0; }
+
+/* Text selection — violet accent instead of system blue */
+::selection { background-color: rgba(88, 101, 242, 0.45); color: #fff; }

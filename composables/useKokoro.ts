@@ -40,109 +40,210 @@ export const KOKORO_VOICES: KokoroVoice[] = [
 
 export type KokoroDevice = 'auto' | 'gpu' | 'cpu'
 
+// ── GPU probe (client-side, fires once at module load) ────────────────────────
+// null = still detecting, true/false = result
+const hasGpu = ref<boolean | null>(null)
+
+if (import.meta.client) {
+  ;(async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const nav = navigator as any
+      if (!nav.gpu) { hasGpu.value = false; return }
+      const adapter = await nav.gpu.requestAdapter()
+      hasGpu.value = !!adapter
+    } catch {
+      hasGpu.value = false
+    }
+  })()
+}
+
+// ── Module-level singleton state ──────────────────────────────────────────────
+
+const initializing  = ref(false)
+const initProgress  = ref(0)
+const initStatus    = ref('')
+const error         = ref('')
+const generating    = ref(false)
+const genChunk      = ref(0)
+const genTotal      = ref(0)
+const audioUrl      = ref('')
+const audioBuffer   = ref<ArrayBuffer | null>(null)
+const elapsedMs     = ref(0)
+const sampleRate    = ref(24000)
+const activeDevice  = ref<'gpu' | 'cpu' | ''>('')
+const genDevice     = ref<'gpu' | 'cpu' | ''>('')
+const gpuFallback   = ref(false)
+
+// Track what was last sent to the worker for accurate history saves
+const lastGenText   = ref('')
+const lastGenVoice  = ref('')
+const lastGenSpeed  = ref(1.0)
+
+let _worker: Worker | null = null
+let _blobUrl = ''
+
+function spawnWorker(): Worker {
+  const w = new Worker(
+    new URL('../workers/kokoro.worker.ts', import.meta.url),
+    { type: 'module' },
+  )
+  w.addEventListener('message', (e: MessageEvent<WorkerOut>) => {
+    const msg = e.data
+    switch (msg.type) {
+      case 'status':
+        initStatus.value = msg.msg
+        break
+      case 'progress':
+        initProgress.value = msg.value
+        break
+      case 'ready':
+        activeDevice.value  = msg.device
+        initializing.value  = false
+        initStatus.value    = ''
+        initProgress.value  = 0
+        break
+      case 'genProgress':
+        genChunk.value = msg.chunk
+        genTotal.value = msg.total
+        break
+      case 'audio': {
+        if (_blobUrl) URL.revokeObjectURL(_blobUrl)
+        const blob  = new Blob([msg.buffer], { type: 'audio/wav' })
+        _blobUrl          = URL.createObjectURL(blob)
+        audioBuffer.value  = msg.buffer
+        audioUrl.value     = _blobUrl
+        elapsedMs.value    = msg.elapsedMs
+        sampleRate.value   = msg.sampleRate
+        genDevice.value    = msg.device
+        gpuFallback.value  = msg.gpuFallback
+        generating.value   = false
+        genChunk.value     = 0
+        genTotal.value     = 0
+        break
+      }
+      case 'error':
+        error.value        = msg.msg
+        initializing.value = false
+        generating.value   = false
+        genChunk.value     = 0
+        genTotal.value     = 0
+        break
+    }
+  })
+  return w
+}
+
+function getWorker(): Worker {
+  if (!_worker) _worker = spawnWorker()
+  return _worker
+}
+
+async function init(preferDevice: KokoroDevice = 'auto') {
+  if (initializing.value || activeDevice.value) return
+  initializing.value = true
+  initProgress.value = 0
+  error.value        = ''
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  getWorker().postMessage({ type: 'init', preferDevice, origin } satisfies WorkerIn)
+}
+
+function generate(text: string, voice: string, speed = 1.0) {
+  if (!activeDevice.value || generating.value) return
+  generating.value  = true
+  error.value       = ''
+  genChunk.value    = 0
+  genTotal.value    = 0
+  gpuFallback.value = false
+  lastGenText.value  = text
+  lastGenVoice.value = voice
+  lastGenSpeed.value = speed
+  getWorker().postMessage({ type: 'generate', text, voice, speed } satisfies WorkerIn)
+}
+
+async function save(filename = 'speech.wav') {
+  if (!audioBuffer.value) return
+
+  if ('showSaveFilePicker' in window) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'WAV Audio', accept: { 'audio/wav': ['.wav'] } }],
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const writable = await (handle as any).createWritable()
+      await writable.write(audioBuffer.value)
+      await writable.close()
+      return
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return
+    }
+  }
+
+  if (!_blobUrl) return
+  const a = document.createElement('a')
+  a.href     = _blobUrl
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
+function loadExternal(wavBuffer: ArrayBuffer, meta: {
+  text: string; voice: string; speed: number
+  device: 'gpu' | 'cpu'; elapsedMs: number
+}) {
+  if (_blobUrl) URL.revokeObjectURL(_blobUrl)
+  const blob  = new Blob([wavBuffer], { type: 'audio/wav' })
+  _blobUrl           = URL.createObjectURL(blob)
+  audioBuffer.value  = wavBuffer
+  audioUrl.value     = _blobUrl
+  elapsedMs.value    = meta.elapsedMs
+  sampleRate.value   = 24000
+  genDevice.value    = meta.device
+  gpuFallback.value  = false
+  lastGenText.value  = meta.text
+  lastGenVoice.value = meta.voice
+  lastGenSpeed.value = meta.speed
+}
+
+function reset() {
+  _worker?.postMessage({ type: 'dispose' } satisfies WorkerIn)
+  _worker?.terminate()
+  _worker         = null
+  if (_blobUrl) { URL.revokeObjectURL(_blobUrl); _blobUrl = '' }
+  activeDevice.value  = ''
+  genDevice.value     = ''
+  audioUrl.value      = ''
+  audioBuffer.value   = null
+  initializing.value  = false
+  generating.value    = false
+  error.value         = ''
+  gpuFallback.value   = false
+  initStatus.value    = ''
+  initProgress.value  = 0
+}
+
+async function setDevice(pref: KokoroDevice) {
+  _worker?.postMessage({ type: 'dispose' } satisfies WorkerIn)
+  _worker?.terminate()
+  _worker = null
+  activeDevice.value = ''
+  error.value        = ''
+  await init(pref)
+}
+
 // ── Composable ────────────────────────────────────────────────────────────────
 
 export function useKokoro() {
-  const initializing  = ref(false)
-  const initProgress  = ref(0)
-  const initStatus    = ref('')
-  const error         = ref('')
-  const generating    = ref(false)
-  const audioUrl      = ref('')
-  const audioBuffer   = ref<ArrayBuffer | null>(null)
-  const elapsedMs     = ref(0)
-  const sampleRate    = ref(24000)
-  const activeDevice  = ref<'gpu' | 'cpu' | ''>('')
-
-  let worker: Worker | null = null
-  let blobUrl = ''
-
-  function spawnWorker(): Worker {
-    const w = new Worker(
-      new URL('../workers/kokoro.worker.ts', import.meta.url),
-      { type: 'module' },
-    )
-    w.addEventListener('message', (e: MessageEvent<WorkerOut>) => {
-      const msg = e.data
-      switch (msg.type) {
-        case 'status':
-          initStatus.value = msg.msg
-          break
-        case 'progress':
-          initProgress.value = msg.value
-          break
-        case 'ready':
-          activeDevice.value  = msg.device
-          initializing.value  = false
-          initStatus.value    = ''
-          initProgress.value  = 0
-          break
-        case 'audio': {
-          if (blobUrl) URL.revokeObjectURL(blobUrl)
-          const blob  = new Blob([msg.buffer], { type: 'audio/wav' })
-          blobUrl     = URL.createObjectURL(blob)
-          audioBuffer.value  = msg.buffer
-          audioUrl.value     = blobUrl
-          elapsedMs.value    = msg.elapsedMs
-          sampleRate.value   = msg.sampleRate
-          generating.value   = false
-          break
-        }
-        case 'error':
-          error.value        = msg.msg
-          initializing.value = false
-          generating.value   = false
-          break
-      }
-    })
-    return w
-  }
-
-  function getWorker(): Worker {
-    if (!worker) worker = spawnWorker()
-    return worker
-  }
-
-  async function init(preferDevice: KokoroDevice = 'auto') {
-    if (initializing.value) return
-    initializing.value = true
-    initProgress.value = 0
-    error.value        = ''
-    const origin = typeof window !== 'undefined' ? window.location.origin : ''
-    getWorker().postMessage({ type: 'init', preferDevice, origin } satisfies WorkerIn)
-  }
-
-  function generate(text: string, voice: string, speed = 1.0) {
-    if (!activeDevice.value || generating.value) return
-    generating.value = true
-    error.value      = ''
-    getWorker().postMessage({ type: 'generate', text, voice, speed } satisfies WorkerIn)
-  }
-
-  function save(filename = 'speech.wav') {
-    if (!blobUrl) return
-    const a = document.createElement('a')
-    a.href = blobUrl; a.download = filename; a.click()
-  }
-
-  async function setDevice(pref: KokoroDevice) {
-    worker?.postMessage({ type: 'dispose' } satisfies WorkerIn)
-    worker?.terminate()
-    worker = null
-    activeDevice.value = ''
-    error.value        = ''
-    await init(pref)
-  }
-
-  onUnmounted(() => {
-    worker?.terminate()
-    if (blobUrl) URL.revokeObjectURL(blobUrl)
-  })
-
   return {
+    hasGpu,
     initializing, initProgress, initStatus,
-    error, generating, audioUrl, audioBuffer, elapsedMs, sampleRate, activeDevice,
+    error, generating, genChunk, genTotal,
+    audioUrl, audioBuffer, elapsedMs, sampleRate, activeDevice, genDevice, gpuFallback,
+    lastGenText, lastGenVoice, lastGenSpeed,
     voices: KOKORO_VOICES,
-    init, generate, save, setDevice,
+    init, generate, save, setDevice, loadExternal, reset,
   }
 }

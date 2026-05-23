@@ -15,6 +15,6 @@ export default defineNuxtConfig({
     typeCheck: true
   },
   compatibilityDate: '2026-05-21',
-  devtools: { enabled: false }
+  devtools: { enabled: true }
 })
 
