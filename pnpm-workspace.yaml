@@ -1,2 +1,9 @@
 packages:
   - 'apps/*'
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - onnxruntime-node
+  - protobufjs
+  - sharp
