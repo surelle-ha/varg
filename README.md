@@ -157,7 +157,7 @@ The release workflow builds the installer and creates a GitHub Release automatic
 1. Fork the repo and create a `feature/your-feature` branch off `test`
 2. Open a PR targeting the `test` branch — CI builds a beta artifact
 3. Once QA passes, a maintainer opens a PR from `test` → `main`
-4. Direct pushes to `main` are not permitted
+4. Direct pushes to `main` are not permitted.
 
 ---
 
