@@ -1,6 +1,15 @@
 {
   "name": "varg-workspace",
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild",
+      "onnxruntime-node",
+      "protobufjs",
+      "sharp"
+    ]
+  },
   "scripts": {
     "desktop:dev": "pnpm --filter desktop tauri:dev",
     "desktop:build": "pnpm --filter desktop tauri:build",
