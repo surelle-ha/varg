@@ -8,7 +8,6 @@ export interface AppSettings {
   notifyOnComplete: boolean
   activeTtsModel: 'kokoro' | 'parler'
   chatterboxExaggeration: number
-  hfToken: string
 }
 
 const DEFAULTS: AppSettings = {
@@ -19,7 +18,6 @@ const DEFAULTS: AppSettings = {
   notifyOnComplete: true,
   activeTtsModel: 'kokoro',
   chatterboxExaggeration: 0.5,
-  hfToken: '',
 }
 
 function load(): AppSettings {
@@ -72,13 +70,9 @@ export function useSettings() {
     set('chatterboxExaggeration', Math.max(0, Math.min(2, n)))
   }
 
-  function setHfToken(t: string) {
-    set('hfToken', t)
-  }
-
   return {
     settings,
     setMaxChars, setDefaultVoice, setShowSystemMonitor, setShowMcpServer,
-    setNotifyOnComplete, setActiveTtsModel, setChatterboxExaggeration, setHfToken,
+    setNotifyOnComplete, setActiveTtsModel, setChatterboxExaggeration,
   }
 }
