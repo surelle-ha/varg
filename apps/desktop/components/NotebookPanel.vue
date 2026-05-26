@@ -294,6 +294,46 @@ function toggleComment() {
   nextTick(() => { ta.selectionStart = s; ta.selectionEnd = s + replacement.length })
 }
 
+function insertSectionTitle() {
+  const ta = textareaRef.value
+  if (!ta) return
+  const val = contentDraft.value
+  const pos = ta.selectionStart
+  // Find start of current line
+  const lineStart = val.lastIndexOf('\n', pos - 1) + 1
+  const lineEnd   = val.indexOf('\n', pos)
+  const end       = lineEnd === -1 ? val.length : lineEnd
+  const line      = val.slice(lineStart, end)
+
+  let newVal: string
+  let newPos: number
+  if (line.startsWith('=== ')) {
+    // Already a section — remove it
+    newVal = val.slice(0, lineStart) + line.slice(4) + val.slice(end)
+    newPos = Math.max(lineStart, pos - 4)
+  } else {
+    newVal = val.slice(0, lineStart) + '=== ' + line + val.slice(end)
+    newPos = lineStart + 4 + (pos - lineStart)
+  }
+  contentDraft.value = newVal
+  nextTick(() => { ta.selectionStart = ta.selectionEnd = newPos })
+}
+
+function insertDivider() {
+  const ta = textareaRef.value
+  if (!ta) return
+  const val = contentDraft.value
+  const pos = ta.selectionStart
+  const before = val.slice(0, pos)
+  const after  = val.slice(pos)
+  const prefix = before.length && !before.endsWith('\n') ? '\n' : ''
+  const suffix = after.length  && !after.startsWith('\n') ? '\n' : ''
+  const insert = `${prefix}###${suffix}`
+  contentDraft.value = before + insert + after
+  const newPos = pos + prefix.length + 3
+  nextTick(() => { ta.selectionStart = ta.selectionEnd = newPos })
+}
+
 function onKeydown(e: KeyboardEvent) {
   if (e.ctrlKey && e.key === 's') { e.preventDefault(); manualSave() }
   if (e.ctrlKey && e.key === '/') { e.preventDefault(); toggleComment() }
@@ -891,6 +931,43 @@ onUnmounted(() => {
             Generate
           </button>
         </div>
+      </div>
+
+      <!-- Insert toolbar -->
+      <div class="flex items-center gap-1 border-b border-white/5 bg-surface/40 px-3 py-1.5">
+        <span class="mr-1 text-[9px] font-semibold uppercase tracking-widest text-faded/30">Insert</span>
+        <!-- Comment -->
+        <button type="button" title="Wrap selection as comment  (Ctrl+/)"
+          class="flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] text-faded transition-ui hover:bg-subtle hover:text-secondary"
+          @click="toggleComment">
+          <svg class="h-3.5 w-3.5 text-violet-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+          </svg>
+          <span>Comment</span>
+          <span class="text-[9px] text-faded/30">@ … !@</span>
+        </button>
+        <span class="h-3.5 w-px bg-white/10" />
+        <!-- Section title -->
+        <button type="button" title="Add/remove section title on this line"
+          class="flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] text-faded transition-ui hover:bg-subtle hover:text-secondary"
+          @click="insertSectionTitle">
+          <svg class="h-3.5 w-3.5 text-amber-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h10" />
+          </svg>
+          <span>Section</span>
+          <span class="text-[9px] text-faded/30">=== Title</span>
+        </button>
+        <span class="h-3.5 w-px bg-white/10" />
+        <!-- Audio divider -->
+        <button type="button" title="Insert audio part divider (splits into separate files)"
+          class="flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] text-faded transition-ui hover:bg-subtle hover:text-secondary"
+          @click="insertDivider">
+          <svg class="h-3.5 w-3.5 text-faded/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+          </svg>
+          <span>Divider</span>
+          <span class="text-[9px] text-faded/30">###</span>
+        </button>
       </div>
 
       <!-- Editor row -->

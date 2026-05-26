@@ -10,8 +10,9 @@ dist/
 apps/desktop/src-tauri/target/
 apps/desktop/src-tauri/gen/
 
+# Other files
 *.log
-TODO.md
+docs/todo
 
 # Bundled Kokoro TTS model files (download with: pnpm model:download)
 apps/desktop/public/models/

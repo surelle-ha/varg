@@ -2,10 +2,7 @@
 import { useSettings } from '~/composables/useSettings'
 import { useParler } from '~/composables/useParler'
 
-const { settings, setHfToken } = useSettings()
-const hfTokenDraft = ref(settings.value.hfToken)
-watch(() => settings.value.hfToken, t => { hfTokenDraft.value = t })
-function commitToken() { setHfToken(hfTokenDraft.value.trim()) }
+const { settings } = useSettings()
 
 // ── Bark — init via worker (transformers.js handles download + cache) ──────────
 const {
@@ -96,11 +93,8 @@ const downloadItems = ref<DownloadItem[]>([])
 
 async function downloadFile(item: DownloadItem) {
   const url = `${item.hfBase}/${item.hfPath}`
-  const headers: HeadersInit = settings.value.hfToken
-    ? { Authorization: `Bearer ${settings.value.hfToken}` }
-    : {}
   let res: Response
-  try { res = await fetch(url, { headers }) } catch (e) { item.error = `Network: ${(e as Error).message}`; return }
+  try { res = await fetch(url) } catch (e) { item.error = `Network: ${(e as Error).message}`; return }
   if (!res.ok) { item.error = `HTTP ${res.status}${res.status === 401 ? ' (check HF token)' : ''}`; return }
   item.total = Number(res.headers.get('content-length') ?? 0)
 
@@ -174,33 +168,6 @@ function fmtBytes(n: number) {
 
   <div class="flex-1 overflow-y-auto">
     <div class="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4">
-
-    <!-- ── HuggingFace Token ──────────────────────────────────────────────── -->
-    <div class="glass-panel rounded-xl p-4 space-y-3">
-      <div>
-        <div class="flex items-center justify-between">
-          <h2 class="text-[12px] font-semibold text-secondary">HuggingFace Access Token</h2>
-          <span class="rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
-            :class="settings.hfToken ? 'bg-ok/10 text-ok' : 'bg-subtle text-faded/60'">
-            {{ settings.hfToken ? 'Set' : 'Not set' }}
-          </span>
-        </div>
-        <p class="mt-0.5 text-[11px] text-faded">Required for gated models. Free at huggingface.co/settings/tokens</p>
-      </div>
-      <div class="relative">
-        <input v-model="hfTokenDraft" type="password"
-          class="glass-input w-full rounded-lg px-3 py-2 text-[12px] font-mono pr-16 transition-ui"
-          placeholder="hf_••••••••••••••••••••"
-          @blur="commitToken"
-          @keydown.enter="commitToken" />
-        <button v-if="hfTokenDraft" type="button"
-          class="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1.5 py-0.5 text-[10px] text-faded hover:text-secondary transition-ui"
-          @click="hfTokenDraft = ''; commitToken()">
-          Clear
-        </button>
-      </div>
-      <p class="text-[10px] text-faded/50">Stored locally. Sent only to huggingface.co during Kokoro downloads.</p>
-    </div>
 
     <!-- ── Kokoro TTS ──────────────────────────────────────────────────────── -->
     <div class="glass-panel rounded-xl p-4 space-y-4">
