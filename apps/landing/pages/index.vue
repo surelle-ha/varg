@@ -130,7 +130,7 @@ const badgeClass: Record<string, string> = {
     <!-- ── Nav ──────────────────────────────────────────────────────────────── -->
     <nav class="sticky top-0 z-50 flex items-center justify-between px-8 py-4 border-b border-white/5 bg-base/80 backdrop-blur-xl">
       <div class="flex items-center gap-3">
-        <img src="/icon.png" alt="Varg" class="h-7 w-7 rounded-lg object-cover" />
+        <img src="/icon.png" alt="Varg" class="h-7 w-7" />
         <span class="text-[15px] font-bold tracking-widest uppercase select-none">Varg</span>
         <span class="hidden sm:inline rounded-full bg-accent/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-accent">Studio</span>
       </div>
@@ -183,12 +183,12 @@ const badgeClass: Record<string, string> = {
             <img
               src="/icon.png"
               alt="Varg Studio"
-              class="h-20 w-20 rounded-2xl object-cover shadow-2xl animate-glow"
+              class="h-20 w-20 icon-glow"
             />
           </div>
           <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-4 py-1.5 text-[11px] font-medium uppercase tracking-widest text-white/50 backdrop-blur-sm">
             <span class="h-1.5 w-1.5 rounded-full bg-ok animate-pulse" />
-            On-device · Offline · Free
+            On-device · Offline · Free · Open Source
           </div>
         </div>
 
@@ -244,7 +244,8 @@ const badgeClass: Record<string, string> = {
         </div>
 
         <p class="animate-fade-up mt-5 text-[11px] text-white/25" style="animation-delay:0.65s">
-          Windows 10/11 · Free · No account required
+          Windows 10/11 · Free · No account required ·
+          <a href="https://github.com/surelle-ha/varg" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-white/50 transition-colors">build from source</a>
         </p>
       </div>
 
@@ -426,7 +427,7 @@ const badgeClass: Record<string, string> = {
         data-reveal="cta"
         :class="['relative z-10 flex flex-col items-center gap-6 text-center transition-all duration-700', isRevealed('cta') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8']"
       >
-        <img src="/icon.png" alt="Varg" class="h-14 w-14 rounded-2xl shadow-2xl animate-glow" />
+        <img src="/icon.png" alt="Varg" class="h-14 w-14 icon-glow" />
         <h2 class="text-[40px] sm:text-[52px] font-display font-black uppercase tracking-wider leading-tight">
           Start creating.<br/>
           <span class="text-white/30">Without the cloud.</span>
@@ -453,14 +454,14 @@ const badgeClass: Record<string, string> = {
             View source on GitHub →
           </a>
         </div>
-        <p class="text-[11px] text-white/20">Windows 10/11 · No account · No telemetry</p>
+        <p class="text-[11px] text-white/20">Windows 10/11 · No account · No telemetry · Open source — <a href="https://github.com/surelle-ha/varg" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-white/40 transition-colors">build from source</a></p>
       </div>
     </section>
 
     <!-- ── Footer ────────────────────────────────────────────────────────────── -->
     <footer class="border-t border-white/5 bg-base px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-white/25">
       <div class="flex items-center gap-3">
-        <img src="/icon.png" alt="Varg" class="h-5 w-5 rounded-md opacity-60" />
+        <img src="/icon.png" alt="Varg" class="h-5 w-5 opacity-60" />
         <span>© {{ new Date().getFullYear() }} Vindicta. All rights reserved.</span>
       </div>
       <div class="flex items-center gap-5">
@@ -488,4 +489,13 @@ const badgeClass: Record<string, string> = {
 /* ── h-4.5 utility (Tailwind doesn't ship this by default) ──────────────── */
 .h-4\.5 { height: 1.125rem; }
 .w-4\.5 { width:  1.125rem; }
+
+/* ── Icon glow — uses drop-shadow so it follows transparent PNG shape ─────── */
+.icon-glow {
+  animation: iconGlow 3s ease-in-out infinite;
+}
+@keyframes iconGlow {
+  0%, 100% { filter: drop-shadow(0 0 8px  rgba(88,101,242,0.4)); }
+  50%       { filter: drop-shadow(0 0 22px rgba(88,101,242,0.75)); }
+}
 </style>
