@@ -1,12 +1,17 @@
+# Dependencies
 node_modules/
+
+# Nuxt generated / build outputs
 .nuxt/
 .output/
 dist/
-src-tauri/target/
-src-tauri/gen/
+
+# Tauri build artifacts
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/
+
 *.log
 TODO.md
 
 # Bundled Kokoro TTS model files (download with: pnpm model:download)
-public/models/
-
+apps/desktop/public/models/

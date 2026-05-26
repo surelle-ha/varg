@@ -1,0 +1,28 @@
+[package]
+name = "varg"
+version = "0.2.0"
+description = "Local desktop text-to-speech app"
+authors = ["Vindicta"]
+edition = "2021"
+
+[lib]
+name = "varg_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.4", features = [] }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2.8", features = ["tray-icon"] }
+tauri-plugin-notification = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-autostart = "2"
+axum = "0.7"
+tower-http = { version = "0.5", features = ["cors"] }
+tokio = { version = "1", features = ["net", "rt", "sync", "time"] }
+base64 = "0.22"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"

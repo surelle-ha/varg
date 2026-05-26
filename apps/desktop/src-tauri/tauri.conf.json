@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Varg",
+  "version": "0.2.0",
+  "identifier": "com.vindicta.varg",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm generate",
+    "devUrl": "http://localhost:3000",
+    "frontendDist": "../.output/public"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Varg",
+        "width": 1180,
+        "height": 760,
+        "minWidth": 920,
+        "minHeight": 620,
+        "decorations": false,
+        "resizable": true,
+        "center": true,
+        "visible": false
+      },
+      {
+        "label": "splashscreen",
+        "title": "Varg",
+        "url": "splashscreen.html",
+        "width": 340,
+        "height": 380,
+        "decorations": false,
+        "resizable": false,
+        "center": true,
+        "visible": true,
+        "skipTaskbar": true,
+        "alwaysOnTop": true,
+        "transparent": true,
+        "shadow": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/icon.png", "icons/icon.ico"],
+    "resources": {
+      "resources/tts/": "tts/"
+    },
+    "windows": {
+      "nsis": {
+        "displayLanguageSelector": false,
+        "installMode": "perMachine"
+      }
+    }
+  }
+}
